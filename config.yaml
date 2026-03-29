@@ -1,0 +1,66 @@
+# ═══════════════════════════════════════════════════════════
+# Motion-Triggered Recording Pipeline Configuration
+# ═══════════════════════════════════════════════════════════
+
+# Camera RTSP Stream Settings
+# Uses TAPO_CAMERA_USER, TAPO_CAMERA_PASSWORD, TAPO_IP from .env
+stream:
+  # stream1 = HD (1080p), stream2 = SD (480p)
+  stream_path: "/stream1"
+  rtsp_port: 554
+  # How many frames per second to process (lower = less CPU)
+  # The actual stream may be 15-30fps, but we only analyze this many
+  process_fps: 5
+  # Timeout for RTSP connection (seconds)
+  connection_timeout: 10
+  # Max reconnection attempts before giving up (0 = infinite)
+  max_reconnect_attempts: 0
+  # Delay between reconnection attempts (seconds)
+  reconnect_delay: 5
+
+# Motion Detection Settings
+motion:
+  # Pixel difference threshold (0-255)
+  # Lower = more sensitive to small changes, Higher = only detect big changes
+  sensitivity: 25
+  # Gaussian blur kernel size (must be odd number)
+  # Helps reduce noise-triggered false positives
+  blur_kernel: 21
+  # Minimum percentage of frame that must change to count as motion (0.0-100.0)
+  # e.g., 0.5 means 0.5% of pixels must differ
+  min_motion_area_pct: 0.5
+  # Minimum contour area in pixels to count as motion
+  # Helps filter out tiny noise-based changes
+  min_contour_area: 500
+
+# Recording Settings
+recording:
+  # Output directory for recorded clips
+  output_dir: "./recordings"
+  # Video codec: "mp4v" (MPEG-4), "avc1" (H.264), "XVID" (AVI)
+  codec: "mp4v"
+  # Output file extension
+  file_extension: ".mp4"
+  # Pre-buffer: seconds of footage to keep BEFORE motion starts
+  pre_buffer_seconds: 3
+  # Post-buffer: seconds to continue recording AFTER motion stops
+  post_buffer_seconds: 10
+  # Maximum recording duration in seconds (safety limit)
+  max_recording_seconds: 300
+  # Add timestamp overlay on recorded video
+  timestamp_overlay: true
+  # Timestamp font scale (relative to frame size)
+  timestamp_font_scale: 0.7
+  # Timestamp position: "top-left", "top-right", "bottom-left", "bottom-right"
+  timestamp_position: "bottom-left"
+  # Timestamp color (B, G, R)
+  timestamp_color: [255, 255, 255]
+  # Timestamp background color (B, G, R) - semi-transparent box behind text
+  timestamp_bg_color: [0, 0, 0]
+
+# Logging Settings
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  # Log to file (in addition to console)
+  log_to_file: true
+  log_file: "./logs/surveillance.log"
