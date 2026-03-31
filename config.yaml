@@ -93,3 +93,12 @@ video_processing:
     resize_height: 480          # Resize frame height before sending to AI
     ai_model: "gpt-4o"          # OpenAI model to use for analysis
     ai_detail_level: "low"      # Image detail level: "low", "high", or "auto"
+
+  # WhatsApp Notification Settings (via OpenClaw)
+  # Uses WHATSAPP_TARGET_NUMBER from .env
+  whatsapp_notification:
+    enabled: true               # Enable WhatsApp notifications
+    target_number: "+917719987767"           # WhatsApp number in E.164 format (e.g., +1234567890)
+                                # Can be set here or via WHATSAPP_TARGET_NUMBER in .env
+    channel: "whatsapp"         # OpenClaw channel (whatsapp, telegram, etc.)
+    send_on_trigger: true       # Send notification when unknown individuals detected

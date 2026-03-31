@@ -17,6 +17,7 @@ from datetime import datetime
 from .face_detector import FaceDetector, DetectedFace
 from .face_recognizer import FaceRecognizer, FaceMatch
 from .config import VideoProcessingConfig
+from .whatsapp_notifier import WhatsAppNotifier
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,18 @@ class VideoAnalyzer:
 
         # OpenAI client (lazy initialization)
         self._openai_client = None
+
+        # Initialize WhatsApp notifier if enabled
+        self._whatsapp_notifier = None
+        if config.whatsapp_notification.enabled:
+            if config.whatsapp_notification.target_number:
+                self._whatsapp_notifier = WhatsAppNotifier(
+                    target_number=config.whatsapp_notification.target_number,
+                    channel=config.whatsapp_notification.channel,
+                )
+                logger.info(f"  WhatsApp notifications enabled for {config.whatsapp_notification.target_number}")
+            else:
+                logger.warning("  WhatsApp notifications enabled but no target number configured")
 
         logger.info("Video analyzer initialized")
         logger.info(f"  Known faces loaded: {self._recognizer.known_faces_count}")
@@ -161,6 +174,18 @@ class VideoAnalyzer:
         logger.info("=" * 60)
         logger.info(f"  ✅ Analysis completed in {duration:.2f}s")
         logger.info("=" * 60)
+
+        # Send WhatsApp notification if enabled and triggers detected
+        if self._whatsapp_notifier and trigger_frames and self.config.whatsapp_notification.send_on_trigger:
+            logger.info("📱 Sending WhatsApp notification...")
+            success = self._whatsapp_notifier.send_video_analysis_summary(
+                video_name=video_path.name,
+                trigger_count=len(trigger_frames),
+                ai_summary=ai_summary,
+                analysis_duration=duration,
+            )
+            if not success:
+                logger.warning("Failed to send WhatsApp notification")
 
         return result
 

@@ -8,6 +8,7 @@ AI-powered video analysis module for the surveillance agent. Provides face detec
 - **Face Recognition**: Identify known individuals using SFace embeddings and cosine similarity
 - **AI-Powered Analysis**: Generate intelligent summaries of surveillance footage using GPT-4
 - **Trigger Detection**: Automatically identify frames with unknown/unauthorized individuals
+- **WhatsApp Notifications**: Send AI summaries via WhatsApp using OpenClaw integration
 - **Configurable**: Fully configurable via YAML config file
 
 ## Architecture
@@ -243,12 +244,24 @@ else:
 - Check OpenAI API quota/limits
 - Ensure `openai` package is installed
 
+## WhatsApp Notifications
+
+The module now supports automatic WhatsApp notifications via OpenClaw! When unknown individuals are detected, you'll receive an AI-powered summary directly on WhatsApp.
+
+**See [WHATSAPP_INTEGRATION.md](WHATSAPP_INTEGRATION.md) for complete setup and usage instructions.**
+
+Quick setup:
+1. Install and configure OpenClaw CLI
+2. Add `WHATSAPP_TARGET_NUMBER=+919834570619` to `.env`
+3. Set `whatsapp_notification.enabled: true` in `config.yaml`
+4. Run video analysis - notifications sent automatically!
+
 ## Future Enhancements
 
 - [ ] Real-time video stream analysis
 - [ ] Multi-face tracking across frames
 - [ ] Age/gender/emotion detection
-- [ ] Integration with notification system
+- [x] Integration with notification system (WhatsApp via OpenClaw)
 - [ ] Web dashboard for results visualization
 - [ ] Database storage for analysis history
 

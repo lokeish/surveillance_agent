@@ -49,11 +49,21 @@ class VideoAnalysisConfig:
 
 
 @dataclass
+class WhatsAppNotificationConfig:
+    """WhatsApp notification settings."""
+    enabled: bool = False
+    target_number: str = ""
+    channel: str = "whatsapp"
+    send_on_trigger: bool = True  # Send alert when triggers detected
+
+
+@dataclass
 class VideoProcessingConfig:
     """Top-level video processing configuration."""
     face_detection: FaceDetectionConfig = field(default_factory=FaceDetectionConfig)
     face_recognition: FaceRecognitionConfig = field(default_factory=FaceRecognitionConfig)
     video_analysis: VideoAnalysisConfig = field(default_factory=VideoAnalysisConfig)
+    whatsapp_notification: WhatsAppNotificationConfig = field(default_factory=WhatsAppNotificationConfig)
     openai_api_key: str = ""
 
 
@@ -134,10 +144,30 @@ def load_config(config_path: Optional[str] = None, env_path: Optional[str] = Non
         ai_detail_level=video_analysis_cfg.get("ai_detail_level", "low"),
     )
 
+    # WhatsApp notification config
+    whatsapp_cfg = vp_config.get("whatsapp_notification", {})
+    
+    # Get target number from environment variable or config
+    whatsapp_target = os.getenv("WHATSAPP_TARGET_NUMBER", "")
+    if not whatsapp_target:
+        whatsapp_target = whatsapp_cfg.get("target_number", "")
+    
+    whatsapp_notification = WhatsAppNotificationConfig(
+        enabled=whatsapp_cfg.get("enabled", False),
+        target_number=whatsapp_target,
+        channel=whatsapp_cfg.get("channel", "whatsapp"),
+        send_on_trigger=whatsapp_cfg.get("send_on_trigger", True),
+    )
+    
+    if whatsapp_notification.enabled and not whatsapp_notification.target_number:
+        logger.warning("WhatsApp notifications enabled but no target number configured. "
+                      "Set WHATSAPP_TARGET_NUMBER in .env or whatsapp_notification.target_number in config.yaml")
+
     config = VideoProcessingConfig(
         face_detection=face_detection,
         face_recognition=face_recognition,
         video_analysis=video_analysis,
+        whatsapp_notification=whatsapp_notification,
         openai_api_key=openai_api_key,
     )
 
