@@ -47,13 +47,22 @@ class WhatsAppNotifier:
         """
         try:
             # Build openclaw command - correct syntax: openclaw agent --to <number> --message <text> --deliver --channel <channel>
+            # cmd = [
+            #     "openclaw",
+            #     "agent",
+            #     "--to", self.target_number,
+            #     "--message", message,
+            #     "--deliver",
+            #     "--channel", self.channel,
+            # ]
+
             cmd = [
                 "openclaw",
-                "agent",
-                "--to", self.target_number,
-                "--message", message,
-                "--deliver",
-                "--channel", self.channel,
+                "message",
+                "send",
+                "--channel", self.channel, 
+                "--target", self.target_number, 
+                "--message", message
             ]
             
             # Note: media attachments are not supported via openclaw agent CLI
@@ -71,12 +80,19 @@ class WhatsAppNotifier:
                 timeout=30,
             )
             
+            # Log both stdout and stderr for debugging
+            logger.debug(f"Return code: {result.returncode}")
+            logger.debug(f"STDOUT: {result.stdout}")
+            logger.debug(f"STDERR: {result.stderr}")
+            
             if result.returncode == 0:
                 logger.info("✅ WhatsApp message sent successfully")
-                logger.debug(f"Output: {result.stdout}")
+                logger.info(f"OpenClaw response: {result.stdout.strip()}")
                 return True
             else:
-                logger.error(f"Failed to send WhatsApp message: {result.stderr}")
+                logger.error(f"Failed to send WhatsApp message (code {result.returncode})")
+                logger.error(f"STDOUT: {result.stdout}")
+                logger.error(f"STDERR: {result.stderr}")
                 return False
                 
         except subprocess.TimeoutExpired:

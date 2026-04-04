@@ -98,7 +98,17 @@ video_processing:
   # Uses WHATSAPP_TARGET_NUMBER from .env
   whatsapp_notification:
     enabled: true               # Enable WhatsApp notifications
-    target_number: "+917719987767"           # WhatsApp number in E.164 format (e.g., +1234567890)
+    target_number: ""           # WhatsApp number in E.164 format (e.g., +1234567890)
                                 # Can be set here or via WHATSAPP_TARGET_NUMBER in .env
     channel: "whatsapp"         # OpenClaw channel (whatsapp, telegram, etc.)
     send_on_trigger: true       # Send notification when unknown individuals detected
+
+  # Automated Watcher Settings
+  watcher:
+    enabled: true                           # Enable automated video processing watcher
+    recordings_dir: "./recordings"          # Directory to monitor for new videos
+    process_existing_on_startup: false      # Process existing videos when watcher starts
+    file_stable_delay: 5.0                  # Wait N seconds after file modification stops (increased for MP4 finalization)
+    max_retries: 2                          # Maximum retry attempts for invalid videos
+    retry_delay: 3.0                        # Seconds to wait before retrying
+    state_file: "video_processing/processed_videos.json"  # State persistence file
