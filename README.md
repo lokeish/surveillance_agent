@@ -1,6 +1,6 @@
 # 🛡️ Surveillance Agent
 
-**AI-powered local surveillance system that monitors your cameras 24/7 and keeps you informed — all from your own machine.**
+**AI-powered local surveillance system that monitors your cameras 24/7 and keeps you informed — all from your own machine.** 
 
 ---
 
