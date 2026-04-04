@@ -64,3 +64,41 @@ logging:
   # Log to file (in addition to console)
   log_to_file: true
   log_file: "./logs/surveillance.log"
+
+# ═══════════════════════════════════════════════════════════
+# Video Processing Configuration
+# ═══════════════════════════════════════════════════════════
+
+# Video Processing Settings
+# Uses OPENAI_API_KEY from .env for AI-powered analysis
+video_processing:
+  # Face Detection Settings
+  face_detection:
+    model_path: "video_processing/face_detection_yunet_2023mar.onnx"
+    score_threshold: 0.5  # Minimum confidence for face detection (0.0-1.0)
+    nms_threshold: 0.3    # Non-maximum suppression threshold
+    top_k: 5000           # Maximum number of faces to detect
+
+  # Face Recognition Settings
+  face_recognition:
+    model_path: "video_processing/face_recognition_sface_2021dec.onnx"
+    match_threshold: 0.36  # Cosine similarity threshold for matching (0.0-1.0)
+    known_faces_dir: "video_processing/known_faces"
+
+  # Video Analysis Settings
+  video_analysis:
+    sample_interval_seconds: 2  # Sample frames every N seconds
+    max_frames_per_analysis: 10 # Maximum frames to send to AI for analysis
+    resize_width: 640           # Resize frame width before sending to AI
+    resize_height: 480          # Resize frame height before sending to AI
+    ai_model: "gpt-4o"          # OpenAI model to use for analysis
+    ai_detail_level: "low"      # Image detail level: "low", "high", or "auto"
+
+  # WhatsApp Notification Settings (via OpenClaw)
+  # Uses WHATSAPP_TARGET_NUMBER from .env
+  whatsapp_notification:
+    enabled: true               # Enable WhatsApp notifications
+    target_number: "+917719987767"           # WhatsApp number in E.164 format (e.g., +1234567890)
+                                # Can be set here or via WHATSAPP_TARGET_NUMBER in .env
+    channel: "whatsapp"         # OpenClaw channel (whatsapp, telegram, etc.)
+    send_on_trigger: true       # Send notification when unknown individuals detected

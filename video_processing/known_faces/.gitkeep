@@ -1,0 +1,3 @@
+# Place known face images here
+# Filename (without extension) will be used as the person's name
+# Example: john_doe.jpg -> Person name: "john_doe"
