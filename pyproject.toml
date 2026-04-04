@@ -8,6 +8,8 @@ authors = [
     { name = "Lokeish And Hitesh" },
 ]
 dependencies = [
+    "dependency-injector>=4.45.0",
+    "dynaconf>=3.2.0",
     "nest-asyncio>=1.6.0",
     "numpy>=2.4.3",
     "opencv-contrib-python>=4.10.0.84",

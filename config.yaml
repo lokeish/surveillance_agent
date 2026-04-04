@@ -2,8 +2,31 @@
 # Motion-Triggered Recording Pipeline Configuration
 # ═══════════════════════════════════════════════════════════
 
+# Camera Credentials & Connection
+# Secrets can be overridden via .env using SURVEILLANCE_ prefix:
+#   SURVEILLANCE_CAMERA__IP, SURVEILLANCE_CAMERA__USER, SURVEILLANCE_CAMERA__PASSWORD
+camera:
+  # Camera IP Address — set to null for auto-discovery via network scan
+  ip: null
+  # Camera Account (created in Tapo app > Camera Settings > Advanced > Camera Account)
+  user: ""
+  password: ""
+
+# Network Scanner Settings (used for auto-discovering camera IP)
+network:
+  # Ports to scan when searching for cameras on the local network
+  camera_ports: [80, 554, 8080, 8000, 8899, 88, 8554, 37777]
+  # Ports that indicate an RTSP-capable camera
+  rtsp_ports: [554, 8554]
+  # Socket connection timeout in seconds
+  scan_timeout: 1.5
+  # Thread pool size for parallel scanning
+  max_workers: 100
+  # IP range to scan (last octet)
+  ip_range_start: 1
+  ip_range_end: 255
+
 # Camera RTSP Stream Settings
-# Uses TAPO_CAMERA_USER, TAPO_CAMERA_PASSWORD, TAPO_IP from .env
 stream:
   # stream1 = HD (1080p), stream2 = SD (480p)
   stream_path: "/stream1"

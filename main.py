@@ -2,25 +2,20 @@
 """
 Entry point for the Motion-Triggered Recording Pipeline.
 
+Uses the DI container to resolve all dependencies and start the pipeline.
+
 Usage:
     # Run from project root:
     python3 main.py
 
-    # Or with custom config:
-    python3 main.py --config /path/to/config.yaml
-
-    # With custom .env:
-    python3 main.py --env /path/to/.env
-
-    # Debug mode (override config):
+    # With debug mode:
     python3 main.py --debug
 """
 
 import sys
 import argparse
-from pathlib import Path
 
-from video_pipeline.config import load_config, setup_logging
+from container import Container
 from video_pipeline.pipeline import SurveillancePipeline
 
 
@@ -33,22 +28,9 @@ def parse_args() -> argparse.Namespace:
 Examples:
   python3 main.py                    # Run with default config
   python3 main.py --debug            # Run with debug logging
-  python3 main.py --config my.yaml   # Run with custom config
         """,
     )
 
-    parser.add_argument(
-        "--config",
-        type=str,
-        default=None,
-        help="Path to config.yaml (default: ./config.yaml)",
-    )
-    parser.add_argument(
-        "--env",
-        type=str,
-        default=None,
-        help="Path to .env file (default: ./.env)",
-    )
     parser.add_argument(
         "--debug",
         action="store_true",
@@ -65,29 +47,35 @@ def main() -> None:
     print("")
     print("╔══════════════════════════════════════════════════════════╗")
     print("║  📹 Motion-Triggered Surveillance Recording Pipeline    ║")
-    print("║     Phase 2 — Frame Differencing                       ║")
+    print("║     Phase 2 — Frame Differencing + DI Container         ║")
     print("╚══════════════════════════════════════════════════════════╝")
     print("")
 
     try:
-        # Load configuration
-        config = load_config(
-            config_path=args.config,
-            env_path=args.env,
+        # Initialize DI container
+        container = Container()
+
+        # Configure logging first (via DI)
+        logging_service = container.logging_service()
+        logging_service.configure(
+            level_override="DEBUG" if args.debug else None
         )
 
-        # Override debug if requested
-        if args.debug:
-            config.logging.level = "DEBUG"
+        # Build pipeline config from DI container
+        # (resolves camera IP via config or auto-discovery)
+        config = container.pipeline_config()
 
-        # Start the pipeline
+        # Start the pipeline with injected config
         pipeline = SurveillancePipeline(config=config)
         pipeline.start()
 
     except ValueError as e:
         print(f"\n❌ Configuration error: {e}")
         print("\n🔧 Make sure your .env file is configured correctly.")
-        print("   See .env.example for reference.")
+        print("   Required variables:")
+        print("     SURVEILLANCE_CAMERA__USER=<camera_username>")
+        print("     SURVEILLANCE_CAMERA__PASSWORD=<camera_password>")
+        print("     SURVEILLANCE_CAMERA__IP=<camera_ip>  (optional — auto-discovers if not set)")
         sys.exit(1)
 
     except KeyboardInterrupt:

@@ -12,7 +12,7 @@ import signal
 import logging
 from datetime import datetime, timedelta
 from typing import Optional
-from .config import PipelineConfig, load_config, setup_logging
+from .config import PipelineConfig
 from .stream_capture import StreamCapture
 from .motion_detector import MotionDetector
 from .recording_manager import RecordingManager
@@ -26,20 +26,14 @@ class SurveillancePipeline:
     motion detection, and recording management.
     """
 
-    def __init__(self, config: Optional[PipelineConfig] = None):
+    def __init__(self, config: PipelineConfig):
         """
         Initialize the pipeline.
         
         Args:
-            config: Pipeline configuration. If None, loads from default paths.
+            config: Pipeline configuration (injected via DI container).
         """
-        # Load configuration
-        if config is None:
-            config = load_config()
         self.config = config
-
-        # Setup logging
-        setup_logging(config.logging)
 
         # Components (initialized on start)
         self._stream: Optional[StreamCapture] = None
